@@ -1,4 +1,16 @@
-<head>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Test</title>
+    </head>
+
+    <body>
+        <div id="test_container"></div>
+    </body>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
     <script>
         class Queue {
@@ -35,13 +47,16 @@
         let test_queue = new Queue();
 
         $(function () {
+            // Test
+            getDefData();
+
             let timer = window.setInterval(function () {
-                loadNewDecimal()
+                getGenInt()
             }, 1000)
 
-            function loadNewDecimal() {
+            function getGenInt() {
                 $.ajax({
-                    url: "/update_gen",
+                    url: "/gen_int",
                     type: "POST",
                     dataType: "json",
                     success: function (data) {
@@ -53,7 +68,25 @@
                     }
                 });
             }
-        });
-    </script>
-</head>
 
+            function getDefData() {
+                $.ajax({
+                    url: "/def_data",
+                    type: "POST",
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data);
+                        document.getElementById("test_container").innerHTML = "Success, the passed data is: " + data.score;
+                        // let get_def_data = parseData(JSON.stringify(data));
+                        // console.log("Datatype of get_def_data: " + typeof(get_def_data));
+                        // document.getElementById("test_container").innerHTML = "Success, the passed data is: " + get_def_data;
+                    }
+                });
+            }
+        });
+
+        function parseData(get_def_data) {
+            return parseInt(get_def_data.substring(get_def_data.indexOf(':') + 1, get_def_data.length - 1));
+        }
+    </script>
+</html>
