@@ -1,8 +1,4 @@
 # syntax=docker/dockerfile:1
-
-RUN g++ shared -c -fPIC gen.cpp -o gen.o; \
-    g++ -shared -Wl,-soname,library.so -o library.so gen.o;
-
 FROM python:3.7-alpine
 WORKDIR /code
 ENV FLASK_APP=app.py

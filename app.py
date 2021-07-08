@@ -3,18 +3,18 @@ import random
 import ctypes
 app = Flask(__name__)
 
-random_decimal = 1;
+gen_rand = 0;
 
-@app.route('/update_decimal', methods=['POST'])
+@app.route('/update_gen', methods=['POST'])
 def updatedecimal():
-    random_decimal = ctypes.CDLL('./library.so').generate_int()
+    gen_rand = ctypes.CDLL('./library.so').generate_int()
     x = {
-        "value" : random_decimal
+        "value" : gen_rand
     }
     return json.dumps(x)
 
 @app.route('/')
 def homepage():
-    return render_template('index.html', x = random_decimal)
+    return render_template('index.html', x = gen_rand)
 
 app.run()
