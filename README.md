@@ -1,4 +1,4 @@
-Commands for running this project
+<h1>Commands for running this project</h1><br>
 *** 1. ./cpp_gen.sh<br>
     2. docker-compose up<br>
     3. Head to the following url: http://localhost:5000<br>
