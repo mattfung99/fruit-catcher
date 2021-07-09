@@ -1,6 +1,7 @@
 let test_queue = new Queue();
+let data_handler = {};
 
-$(function () {
+$(document).ready(function () {
     // Test
     getDefData();
 
@@ -25,20 +26,34 @@ $(function () {
 
     function getDefData() {
         $.ajax({
-            url: "/def_data",
+            url: "/get_def_data",
             type: "POST",
             dataType: "json",
             success: function (data) {
-                console.log(data);
-                document.getElementById("test_container").innerHTML = "Success, the passed data is: " + data.score;
-                // let get_def_data = parseData(JSON.stringify(data));
-                // console.log("Datatype of get_def_data: " + typeof(get_def_data));
-                // document.getElementById("test_container").innerHTML = "Success, the passed data is: " + get_def_data;
+                data_handler = data;
+                console.log(data_handler);
+                document.getElementById("test_container").innerHTML = "Success, the passed data is: " + data_handler.score;
             }
         });
     }
-});
 
-function parseData(get_def_data) {
-    return parseInt(get_def_data.substring(get_def_data.indexOf(':') + 1, get_def_data.length - 1));
-}
+    $('#make_ajax').click(function () {
+        data_handler.score += 1;
+        console.log(data_handler);
+        console.log(JSON.stringify(data_handler));
+        $.ajax({
+            url: "/up_def_data",
+            type: "POST",
+            data: JSON.stringify(data_handler),
+            contentType: 'application/json;charset=UTF-8',
+            crossDomain: true,
+            dataType: "json",
+            success: function (data) {
+                console.log(data.score);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    });
+});
