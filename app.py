@@ -18,18 +18,16 @@ def gen_int():
 @app.route('/def_data', methods=['POST'])
 def def_data():
     if not os.path.exists("def_data.json"):
-        with io.open(os.path.join('./', "def_data.json"), 'w') as db_file:
+        with io.open(os.path.join('./json/', "def_data.json"), 'w') as db_file:
             db_file.write(json.dumps({
                 "score" : 0 
             }))
     return get_def_data()
 
 def get_def_data():
-    with open("def_data.json") as json_file:
+    with open("./json/def_data.json") as json_file:
         return json.load(json_file)
 
 @app.route('/')
 def homepage():
     return render_template('index.html', x = gen_rand)
-
-app.run()
