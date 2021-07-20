@@ -1,0 +1,14 @@
+#canvas-container {
+    text-align: center;
+    width: 100%;
+}
+
+#canvas-surface {
+    border: 2px solid black;
+    margin: 1mm;
+}
+
+#test-container {
+    text-align: center;
+    width: 100%;
+}
