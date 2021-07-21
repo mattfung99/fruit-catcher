@@ -12,7 +12,7 @@ gen_rand = 0;
 
 @app.route('/gen_int', methods=['POST'])
 def gen_int():
-    gen_rand = ctypes.CDLL('./library.so').generate_int()
+    gen_rand = ctypes.CDLL('./library.so').generate_int(ctypes.c_int(0), ctypes.c_int(100))
     x = {
         "value" : gen_rand
     }

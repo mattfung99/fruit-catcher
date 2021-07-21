@@ -1,13 +1,31 @@
 "use strict";
 
 let ctx;
+let img_background = new Image(),
+    background_width = 480,
+    background_height = 800,
+    background_x = 0,
+    background_y = 0,
+    img_width,
+    img_height;
+img_background.src = "/static/asset/background.jpg";
+
+let img_bucket = new Image(),
+    bucket_width = 80,
+    bucket_height = 83,
+    bucket_x = (background_width / 2) - (bucket_width / 2),
+    bucket_y = 650,
+    player_bucket,
+    player_list = new Array();
+img_bucket.src = "/static/asset/bucket.png";
+
 let test_queue = new Queue();
 let data_handler = {};
 
 let canvas_surface = {
     canvas: document.createElement("canvas"), initialize_game: function () {
-        this.canvas.width = 850;
-        this.canvas.height = 550;
+        this.canvas.width = background_width;
+        this.canvas.height = background_height;
         this.canvas.style.display = 'inline-block';
         this.canvas.style.position = 'relative';
         this.canvas.id = "canvas-surface";
@@ -34,6 +52,51 @@ let canvas_surface = {
         clearInterval(this.interval);
     }
 };
+
+function onload_setup() {
+    img_width = img_background.width;
+    img_height = img_background.height;
+    canvas_surface.initialize_game();
+    player_bucket = new create_bucket(bucket_width, bucket_height, bucket_x, bucket_y);
+    player_list.push(player_bucket);
+    console.log("Current Bucket: " + player_list);
+}
+
+function update_canvas() {
+    canvas_surface.reset_canvas();
+    draw_background();
+    for (let p = 0; p < player_list.length; p++) {
+        allow_movement(p);
+        player_list[p].update_movement();
+        player_list[p].update_speed();
+    }
+}
+
+function draw_background() {
+    ctx = canvas_surface.context;
+    ctx.drawImage(img_background, background_x, background_y, img_width, img_height);
+}
+
+function allow_movement(p) {
+    player_list[p].x_speed *= player_list[p].friction;
+    if (canvas_surface.keys && canvas_surface.keys[37]) {
+        player_list[p].x_speed = -10;
+    }
+    if (canvas_surface.keys && canvas_surface.keys[39]) {
+        player_list[p].x_speed = 10;
+    }
+}
+
+function in_bounds() {
+    for (let p = 0; p < player_list.length; p++) {
+        if (player_list[p].x_pos <= 0) {
+          player_list[p].x_pos = 0;
+        }
+        if (player_list[p].x_pos >= 400) {
+          player_list[p].x_pos = 400;
+        }
+    }
+}
 
 $(document).ready(function () {
     // Test
@@ -91,7 +154,3 @@ $(document).ready(function () {
         });
     });
 });
-
-function onload_setup() {
-    canvas_surface.initialize_game();
-}

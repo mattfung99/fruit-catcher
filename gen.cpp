@@ -2,7 +2,10 @@
 #include <stdlib.h>
 #include <time.h>
 
-extern "C" int generate_int() {
-    srand(time(0));
-    return rand() % 5; 
+int main() {
+    srand(time(NULL));
+}
+
+extern "C" int generate_int(int min, int max) {
+    return (rand() % max) + min;
 }

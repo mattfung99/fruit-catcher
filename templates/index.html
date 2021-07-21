@@ -13,12 +13,13 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='/css/main.css') }}" />
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js" defer></script>
         <script src="{{ url_for('static', filename='/js/queue.js') }}" defer></script>
+        <script src="{{ url_for('static', filename='/js/constructor.js') }}" defer></script>
         <script src="{{ url_for('static', filename='/js/main.js') }}" defer></script>
     </head>
 
     <body onload="onload_setup()">
-        <div id="canvas-container"></div>
         <div id="test-container">
+            <div id="canvas-container"></div>
             <p id="test-output"></p>
             <button id="make-ajax">Make Ajax Call</button>
         </div>
