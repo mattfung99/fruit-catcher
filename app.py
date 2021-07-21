@@ -10,20 +10,31 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 gen_rand = 0;
 
-@app.route('/gen_int', methods=['POST'])
-def gen_int():
-    gen_rand = ctypes.CDLL('./library.so').generate_int(ctypes.c_int(0), ctypes.c_int(100))
-    x = {
-        "value" : gen_rand
+@app.route('/gen_fruits', methods=['POST'])
+def gen_fruits():
+    return gen_int(0, 6, "fruit")
+
+@app.route('/gen_powerups', methods=['POST'])
+def gen_powerups():
+    return gen_int(0, 4, "powerup")
+
+@app.route('/gen_punishments', methods=['POST'])
+def gen_punishments():
+    return gen_int(0, 2, "punishment")
+
+def gen_int(min, max, type):
+    gen_rand = ctypes.CDLL('./library.so').generate_int(ctypes.c_int(min), ctypes.c_int(max))
+    obj = {
+        type : gen_rand
     }
-    return json.dumps(x)
+    return json.dumps(obj)
 
 @app.route('/get_def_data', methods=['POST'])
 def get_def_data():
     if not os.path.exists("./json/def_data.json"):
         with io.open(os.path.join('./json/', "def_data.json"), 'w') as db_file:
             db_file.write(json.dumps({
-                "score" : 0 
+                "highscore" : 0
             }))
     return load_def_data()
 
