@@ -1,6 +1,8 @@
 "use strict";
 
 let test_queue = new Queue();
+let fruit_queue = new Queue(),
+    num_fruits_spawned;
 let data_handler = {};
 let ctx;
 
@@ -57,17 +59,19 @@ let list_punishment = new Array();
 img_bomb.src = "/static/asset/punishment/bomb.png";
 img_skull.src = "/static/asset/punishment/skull.png";
 
-// const falling_obj_type = {
-//     APPLE: "apple",
-//     BANANA: "banana",
-//     CHERRY: "cherry",
-//     PEAR: "pear",
-//     PINEAPPLE: "pineapple",
-//     STRAWBERRY: "strawberry",
-//     CROSS: "cross",
-//     ENERGY: "energy",
-//     LIFE: ""
-// }
+/**
+const falling_obj_type = {
+    APPLE: "apple",
+    BANANA: "banana",
+    CHERRY: "cherry",
+    PEAR: "pear",
+    PINEAPPLE: "pineapple",
+    STRAWBERRY: "strawberry",
+    CROSS: "cross",
+    ENERGY: "energy",
+    LIFE: ""
+}
+*/
 
 let canvas_surface = {
     canvas: document.createElement("canvas"), initialize_game: function () {
@@ -104,7 +108,10 @@ function onload_setup() {
     img_width = img_background.width;
     img_height = img_background.height;
     canvas_surface.initialize_game();
-    player_bucket = new create_bucket(bucket_width, bucket_height, bucket_x, bucket_y);
+    player_bucket = new bucket(bucket_width, bucket_height, bucket_x, bucket_y);
+
+    list_fruit.push(new fruit(falling_obj_width, falling_obj_height, (background_width / 2) - (falling_obj_width / 2), -32, 0, img_apple));
+    console.log("current fruits: " + list_fruit);
 }
 
 function update_canvas() {
@@ -114,6 +121,16 @@ function update_canvas() {
     player_bucket.update_movement();
     player_bucket.display_health();
     player_bucket.update_speed();
+
+    for (let i = 0; i < list_fruit.length; i++) {
+        list_fruit[i].allow_movement();
+        list_fruit[i].update_movement();
+        list_fruit[i].update_speed();
+        if (list_fruit[i].check_bounds()) {
+            list_fruit.splice(i, 1);
+            console.log("current fruits: " + list_fruit);
+        }
+    }
 }
 
 function draw_background() {

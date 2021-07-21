@@ -1,4 +1,4 @@
-function create_bucket(width, height, x, y) {
+function bucket(width, height, x, y) {
     this.location = canvas_surface;
     this.width = width;
     this.height = height;
