@@ -1,5 +1,22 @@
 "use strict";
 
+const BACKGROUND_WIDTH = 480,
+      BACKGROUND_HEIGHT = 800,
+      BACKGROUND_X = 0,
+      BACKGROUND_Y = 0;
+
+const EXPLOSION_WIDTH = 60,
+      EXPLOSION_HEIGHT = 63;
+
+const FALLING_OBJ_WIDTH = 32,
+      FALLING_OBJ_HEIGHT = 32,
+      FALLING_OBJ_Y_POS = -32;
+
+const BUCKET_WIDTH = 80,
+      BUCKET_HEIGHT = 83,
+      BUCKET_X = (BACKGROUND_WIDTH / 2) - (BUCKET_WIDTH / 2),
+      BUCKET_Y = 650;
+
 let queue_fruit = new Queue(),
     num_fruits_spawned = 0,
     num_fruits_queued = 0,
@@ -18,19 +35,11 @@ let data_handler = {},
 let ctx;
 
 let img_background = new Image(),
-    background_width = 480,
-    background_height = 800,
-    background_x = 0,
-    background_y = 0,
     img_width,
     img_height;
 img_background.src = "/static/asset/background/background.jpg";
 
 let img_bucket = new Image(),
-    bucket_width = 80,
-    bucket_height = 83,
-    bucket_x = (background_width / 2) - (bucket_width / 2),
-    bucket_y = 650,
     player_bucket;
 img_bucket.src = "/static/asset/bucket/bucket.png";
 
@@ -40,12 +49,6 @@ img_heart.src = "/static/asset/hearts/heart.png";
 let img_explosion = new Image();
 img_explosion.src = "/static/asset/explosion/explosion.png";
 let list_explosion = new Array();
-const EXPLOSION_WIDTH = 60,
-      EXPLOSION_HEIGHT = 63;
-
-const FALLING_OBJ_WIDTH = 32,
-      FALLING_OBJ_HEIGHT = 32,
-      FALLING_OBJ_Y_POS = -32;
 
 let img_apple = new Image(),
     img_banana = new Image(),
@@ -99,12 +102,13 @@ let sound_caught = new create_sound("/static/asset/sound/beep1.wav"),
     sound_lose_life = new create_sound("/static/asset/sound/switch1.wav"),
     sound_energy = new create_sound("/static/asset/sound/found_item.wav"),
     sound_life = new create_sound("/static/asset/sound/curious_up.wav"),
-    sound_nuclear = new create_sound("/static/asset/sound/explosion.wav");
+    sound_nuclear = new create_sound("/static/asset/sound/explosion.wav"),
+    sound_skull = new create_sound("/static/asset/sound/lose1.wav");
 
 let canvas_surface = {
     canvas: document.createElement("canvas"), initialize_game: function () {
-        this.canvas.width = background_width;
-        this.canvas.height = background_height;
+        this.canvas.width = BACKGROUND_WIDTH;
+        this.canvas.height = BACKGROUND_HEIGHT;
         this.canvas.style.display = 'inline-block';
         this.canvas.style.position = 'relative';
         this.canvas.id = "canvas-surface";
@@ -138,7 +142,7 @@ function onload_setup() {
     img_width = img_background.width;
     img_height = img_background.height;
     canvas_surface.initialize_game();
-    player_bucket = new bucket(bucket_width, bucket_height, bucket_x, bucket_y);
+    player_bucket = new bucket(BUCKET_WIDTH, BUCKET_HEIGHT, BUCKET_X, BUCKET_Y);
     queue_fruits();
     queue_powerups();
     queue_punishments();
@@ -195,6 +199,7 @@ function update_canvas() {
             i--;
         }
         if (list_punishment[i].check_caught()) {
+            activate_punishment(i);
             remove_punishment(i);
             i--;
         }
@@ -204,7 +209,6 @@ function update_canvas() {
         list_explosion[i].update_speed();
         list_explosion[i].distance_travelled++;
         if (list_explosion[i].check_bounds()) {
-            console.log(list_explosion[i].check_bounds());
             list_explosion.splice(i, 1);
             i--;
         }
@@ -214,7 +218,7 @@ function update_canvas() {
 
 function draw_background() {
     ctx = canvas_surface.context;
-    ctx.drawImage(img_background, background_x, background_y, img_width, img_height);
+    ctx.drawImage(img_background, BACKGROUND_X, BACKGROUND_Y, img_width, img_height);
 }
 
 function queue_fruits() {
@@ -363,7 +367,7 @@ function activate_powerup(i) {
                 list_explosion.push(new explosion(
                     EXPLOSION_WIDTH,
                     EXPLOSION_HEIGHT,
-                    list_fruit[i].x_pos,
+                    list_fruit[i].x_pos - (FALLING_OBJ_WIDTH / 2),
                     list_fruit[i].y_pos,
                     1
                 ));
@@ -372,7 +376,7 @@ function activate_powerup(i) {
                 list_explosion.push(new explosion(
                     EXPLOSION_WIDTH,
                     EXPLOSION_HEIGHT,
-                    list_punishment[i].x_pos,
+                    list_punishment[i].x_pos - (FALLING_OBJ_WIDTH / 2),
                     list_punishment[i].y_pos,
                     1
                 ));
@@ -380,6 +384,26 @@ function activate_powerup(i) {
             player_score += list_fruit.length;
             list_fruit.length = 0;
             list_punishment.length = 0;
+            break;
+    }
+}
+
+function activate_punishment(i) {
+    switch (list_punishment[i].punishment_type) {
+        case 0:
+            sound_lose_life.play();
+            list_explosion.push(new explosion(
+                EXPLOSION_WIDTH,
+                EXPLOSION_HEIGHT,
+                list_punishment[i].x_pos - (FALLING_OBJ_WIDTH / 2),
+                list_punishment[i].y_pos,
+                1
+            ));
+            player_bucket.hearts--;
+            break;
+        case 1:
+            sound_skull.play();
+            player_bucket.hearts = 0;
             break;
     }
 }
