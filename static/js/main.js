@@ -5,7 +5,8 @@ let queue_fruit = new Queue(),
     num_fruits_spawned = 0,
     num_fruits_queued = 0,
     flag_fruit_gen = true;
-let data_handler = {};
+let data_handler = {},
+    player_score = 0;
 let ctx;
 
 let img_background = new Image(),
@@ -62,9 +63,6 @@ let list_punishment = new Array();
 img_bomb.src = "/static/asset/punishment/bomb.png";
 img_skull.src = "/static/asset/punishment/skull.png";
 
-let curr_powerup,
-    curr_punishment;
-
 let spawn_fruit = {
     curr_fruit: 0,
     curr_speed: 0,
@@ -82,6 +80,8 @@ let spawn_punishment = {
     curr_speed: 0,
     curr_xpos: 0
 };
+
+let sound_caught = new create_sound("/static/asset/sound/beep1.wav");
 
 let canvas_surface = {
     canvas: document.createElement("canvas"), initialize_game: function () {
@@ -115,6 +115,7 @@ let canvas_surface = {
 };
 
 function onload_setup() {
+    update_score();
     get_def_data();
     img_width = img_background.width;
     img_height = img_background.height;
@@ -139,8 +140,14 @@ function update_canvas() {
         list_fruit[i].update_movement();
         list_fruit[i].update_speed();
         if (list_fruit[i].check_bounds()) {
-            list_fruit.splice(i, 1);
-            num_fruits_spawned--;
+            remove_fruit(i);
+            player_bucket.hearts--;
+        }
+        if (list_fruit[i].check_caught()) {
+            sound_caught.play();
+            remove_fruit(i);
+            player_score++;
+            update_score();
         }
     }
 }
@@ -152,9 +159,9 @@ function draw_background() {
 
 function queue_fruits() {
     let i = 0;
-    let timer = setInterval(function() {
-        if (i == 150) {
-            clearInterval(timer);
+    let timer_fruit = setInterval(function() {
+        if (i == 1000) {
+            clearInterval(timer_fruit);
         }
         get_gen_fruits();
         get_gen_fruits_speed();
@@ -181,6 +188,27 @@ function generate_fruits() {
         num_fruits_spawned++;
         setTimeout(function() {
             flag_fruit_gen = true;
-        }, 2000);
+        }, 1500);
+    }
+}
+
+function remove_fruit(i) {
+    list_fruit.splice(i, 1);
+    num_fruits_spawned--;
+}
+
+function update_score() {
+    document.getElementById("score").innerHTML = "Player Score: " + player_score;
+}
+
+function create_sound(src) {
+    this.sound = document.createElement("audio");
+    this.sound.src = src;
+    this.sound.setAttribute("preload", "auto");
+    this.sound.setAttribute("controls", "none");
+    this.sound.style.display = "none";
+    document.body.appendChild(this.sound);
+    this.play = function() {
+        this.sound.play();
     }
 }

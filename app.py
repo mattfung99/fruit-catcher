@@ -15,20 +15,36 @@ def gen_fruits():
     return gen_int(0, 6, "fruit")
 
 @app.route('/gen_fruits_speed', methods=['POST'])
-def gen_speed():
+def gen_fruits_speed():
     return gen_int(1, 3, "speed")
 
 @app.route('/gen_fruits_xpos', methods=['POST'])
-def gen_xpos():
+def gen_fruits_xpos():
     return gen_int(0, 449, "xpos")
 
 @app.route('/gen_powerups', methods=['POST'])
 def gen_powerups():
     return gen_int(0, 4, "powerup")
 
+@app.route('/gen_powerups_speed', methods=['POST'])
+def gen_powerups_peed():
+    return gen_int(1, 3, "speed")
+
+@app.route('/gen_powerups_xpos', methods=['POST'])
+def gen_powerups_xpos():
+    return gen_int(0, 449, "xpos")
+
 @app.route('/gen_punishments', methods=['POST'])
 def gen_punishments():
     return gen_int(0, 2, "punishment")
+
+@app.route('/gen_punishments_speed', methods=['POST'])
+def gen_punishments_peed():
+    return gen_int(1, 3, "speed")
+
+@app.route('/gen_punishments_xpos', methods=['POST'])
+def gen_punishments_xpos():
+    return gen_int(0, 449, "xpos")
 
 def gen_int(min, max, type):
     gen_rand = ctypes.CDLL('./library.so').generate_int(ctypes.c_int(min), ctypes.c_int(max))

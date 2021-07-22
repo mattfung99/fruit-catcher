@@ -1,11 +1,35 @@
+#body {
+  background: url("/static/asset/background/body_background.jpg");
+  background-repeat: no-repeat;
+  background-size: auto;
+}
+
 #canvas-container {
   text-align: center;
   width: 100%;
 }
 
 #canvas-surface {
-  border: 2px solid saddlebrown;
+  border: 5px solid saddlebrown;
   margin: 1mm;
+}
+
+#flex-container {
+    display: flex;
+    justify-content: center;
+}
+
+#flex-container > div, button {
+    font-family: "Lucida Console", "Courier New", monospace;
+}
+
+#flex-container > div {
+    color: yellow;
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    margin: 8px;
 }
 
 #test-container {

@@ -8,7 +8,10 @@ function fruit(width, height, x, y, fruit_type, speed_type) {
     this.y_pos = y;
     this.fruit_type = fruit_type;
     this.check_bounds = function() {
-        return this.y_pos >= 800;
+        return check_bounds(this);
+    }
+    this.check_caught = function() {
+        return check_caught(this);
     }
     this.img_type = function() {
         switch (this.fruit_type) {

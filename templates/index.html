@@ -20,11 +20,21 @@
         <script src="{{ url_for('static', filename='/js/main.js') }}" defer></script>
     </head>
 
-    <body onload="onload_setup()">
+    <body id="body" onload="onload_setup()">
         <div id="test-container">
+            <div id="flex-container">
+                <div id="highscore">
+                    .
+                </div>
+                <div id="score">
+                    .
+                </div>
+                <div id="restart">
+                    <button id="restart">Restart Game</button>
+                </div>
+            </div>
             <div id="canvas-container"></div>
-            <p id="test-output"></p>
-            <button id="make-ajax">Make Ajax Call</button>
+            <!-- <button id="make-ajax">Make Ajax Call</button> -->
         </div>
     </body>
 </html>
