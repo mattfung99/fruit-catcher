@@ -4,7 +4,7 @@ function update_movement(context, img_type) {
 }
 
 function allow_movement(context) {
-    switch (context.type) {
+    switch (context.speed_type) {
         case 0:
             context.y_speed = 5;
             break;

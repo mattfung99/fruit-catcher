@@ -14,6 +14,14 @@ gen_rand = 0;
 def gen_fruits():
     return gen_int(0, 6, "fruit")
 
+@app.route('/gen_fruits_speed', methods=['POST'])
+def gen_speed():
+    return gen_int(1, 3, "speed")
+
+@app.route('/gen_fruits_xpos', methods=['POST'])
+def gen_xpos():
+    return gen_int(0, 449, "xpos")
+
 @app.route('/gen_powerups', methods=['POST'])
 def gen_powerups():
     return gen_int(0, 4, "powerup")

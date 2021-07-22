@@ -1,8 +1,10 @@
 "use strict";
 
 let test_queue = new Queue();
-let fruit_queue = new Queue(),
-    num_fruits_spawned;
+let queue_fruit = new Queue(),
+    num_fruits_spawned = 0,
+    num_fruits_queued = 0,
+    flag_fruit_gen = true;
 let data_handler = {};
 let ctx;
 
@@ -26,8 +28,9 @@ img_bucket.src = "/static/asset/bucket/bucket.png";
 let img_heart = new Image();
 img_heart.src = "/static/asset/hearts/heart.png";
 
-const falling_obj_width = 32,
-      falling_obj_height = 32;
+const FALLING_OBJ_WIDTH = 32,
+      FALLING_OBJ_HEIGHT = 32,
+      FALLING_OBJ_Y_POS = -32;
 
 let img_apple = new Image(),
     img_banana = new Image(),
@@ -59,19 +62,26 @@ let list_punishment = new Array();
 img_bomb.src = "/static/asset/punishment/bomb.png";
 img_skull.src = "/static/asset/punishment/skull.png";
 
-/**
-const falling_obj_type = {
-    APPLE: "apple",
-    BANANA: "banana",
-    CHERRY: "cherry",
-    PEAR: "pear",
-    PINEAPPLE: "pineapple",
-    STRAWBERRY: "strawberry",
-    CROSS: "cross",
-    ENERGY: "energy",
-    LIFE: ""
-}
-*/
+let curr_powerup,
+    curr_punishment;
+
+let spawn_fruit = {
+    curr_fruit: 0,
+    curr_speed: 0,
+    curr_xpos: 0
+};
+
+let spawn_powerup = {
+    curr_powerup: 0,
+    curr_speed: 0,
+    curr_xpos: 0
+};
+
+let spawn_punishment = {
+    curr_punishment: 0,
+    curr_speed: 0,
+    curr_xpos: 0
+};
 
 let canvas_surface = {
     canvas: document.createElement("canvas"), initialize_game: function () {
@@ -105,13 +115,12 @@ let canvas_surface = {
 };
 
 function onload_setup() {
+    get_def_data();
     img_width = img_background.width;
     img_height = img_background.height;
     canvas_surface.initialize_game();
     player_bucket = new bucket(bucket_width, bucket_height, bucket_x, bucket_y);
-
-    list_fruit.push(new fruit(falling_obj_width, falling_obj_height, (background_width / 2) - (falling_obj_width / 2), -32, 0, img_apple));
-    console.log("current fruits: " + list_fruit);
+    queue_fruits();
 }
 
 function update_canvas() {
@@ -122,13 +131,16 @@ function update_canvas() {
     player_bucket.display_health();
     player_bucket.update_speed();
 
+    generate_fruits();
+    // console.log(list_fruit);
+    // console.log("num fruits spawned: " + num_fruits_spawned);
+
     for (let i = 0; i < list_fruit.length; i++) {
-        list_fruit[i].allow_movement();
         list_fruit[i].update_movement();
         list_fruit[i].update_speed();
         if (list_fruit[i].check_bounds()) {
             list_fruit.splice(i, 1);
-            console.log("current fruits: " + list_fruit);
+            num_fruits_spawned--;
         }
     }
 }
@@ -138,59 +150,37 @@ function draw_background() {
     ctx.drawImage(img_background, background_x, background_y, img_width, img_height);
 }
 
-$(document).ready(function () {
-    // Test
-    get_def_data();
+function queue_fruits() {
+    let i = 0;
+    let timer = setInterval(function() {
+        if (i == 150) {
+            clearInterval(timer);
+        }
+        get_gen_fruits();
+        get_gen_fruits_speed();
+        get_gen_fruits_xpos();
+        setTimeout(function() {
+            queue_fruit.enqueue(new fruit(
+                FALLING_OBJ_WIDTH,
+                FALLING_OBJ_HEIGHT,
+                spawn_fruit.curr_xpos,
+                FALLING_OBJ_Y_POS,
+                spawn_fruit.curr_fruit,
+                spawn_fruit.curr_speed)
+            );
+            num_fruits_queued++;
+        }, 50);
+        i++;
+    }, 50);
+}
 
-    let timer = window.setInterval(function () {
-        get_gen_fruits()
-    }, 1)
-
-    function get_gen_fruits() {
-        $.ajax({
-            url: "/gen_fruits",
-            type: "POST",
-            dataType: "json",
-            success: function (data) {
-                test_queue.enqueue(data);
-                if (test_queue.len() == 10) {
-                    clearInterval(timer);
-                    console.log(test_queue);
-                }
-            }
-        });
+function generate_fruits() {
+    if (flag_fruit_gen && queue_fruit.len() >= 1) {
+        flag_fruit_gen = false;
+        list_fruit.push(queue_fruit.dequeue());
+        num_fruits_spawned++;
+        setTimeout(function() {
+            flag_fruit_gen = true;
+        }, 2000);
     }
-
-    function get_def_data() {
-        $.ajax({
-            url: "/get_def_data",
-            type: "POST",
-            dataType: "json",
-            success: function (data) {
-                data_handler = data;
-                console.log(data_handler);
-                document.getElementById("test-output").innerHTML = "Success, the passed data is: " + data_handler.highscore;
-            }
-        });
-    }
-
-    $('#make-ajax').click(function () {
-        data_handler.highscore += 1;
-        console.log(data_handler);
-        console.log(JSON.stringify(data_handler));
-        $.ajax({
-            url: "/up_def_data",
-            type: "POST",
-            data: JSON.stringify(data_handler),
-            contentType: 'application/json;charset=UTF-8',
-            crossDomain: true,
-            dataType: "json",
-            success: function (data) {
-                console.log(data.highscore);
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        });
-    });
-});
+}
