@@ -1,5 +1,5 @@
 #body {
-  background: url("/static/asset/background/body_background.jpg");
+  background: url("/static/asset/background/fruit_background.jpg");
   background-repeat: no-repeat;
   background-size: auto;
 }
@@ -24,11 +24,11 @@
 }
 
 #flex-container > div {
-    color: yellow;
+    color: black;
     font-size: 15px;
     font-weight: bold;
     text-align: center;
-    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    text-shadow: -1px -1px 0 yellow, 1px -1px 0 yellow, -1px 1px 0 yellow, 1px 1px 0 yellow;
     margin: 8px;
 }
 

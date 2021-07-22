@@ -24,11 +24,11 @@ def gen_fruits_xpos():
 
 @app.route('/gen_powerups', methods=['POST'])
 def gen_powerups():
-    return gen_int(0, 4, "powerup")
+    return gen_int(0, 3, "powerup")
 
 @app.route('/gen_powerups_speed', methods=['POST'])
 def gen_powerups_peed():
-    return gen_int(1, 3, "speed")
+    return gen_int(3, 5, "speed")
 
 @app.route('/gen_powerups_xpos', methods=['POST'])
 def gen_powerups_xpos():
@@ -40,7 +40,7 @@ def gen_punishments():
 
 @app.route('/gen_punishments_speed', methods=['POST'])
 def gen_punishments_peed():
-    return gen_int(1, 3, "speed")
+    return gen_int(3, 5, "speed")
 
 @app.route('/gen_punishments_xpos', methods=['POST'])
 def gen_punishments_xpos():

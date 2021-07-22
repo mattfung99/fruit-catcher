@@ -1,10 +1,18 @@
 "use strict";
 
-let test_queue = new Queue();
 let queue_fruit = new Queue(),
     num_fruits_spawned = 0,
     num_fruits_queued = 0,
     flag_fruit_gen = true;
+let queue_powerup = new Queue(),
+    num_powerups_spawned = 0,
+    num_powerups_queued = 0,
+    flag_powerup_gen = true;
+let queue_punishment = new Queue(),
+    num_punishments_spawned = 0,
+    num_punishments_queued = 0,
+    flag_punishment_gen = true;
+
 let data_handler = {},
     player_score = 0;
 let ctx;
@@ -47,12 +55,10 @@ img_pear.src = "/static/asset/fruits/pear.png";
 img_pineapple.src = "/static/asset/fruits/pineapple.png";
 img_strawberry.src = "/static/asset/fruits/strawberry.png";
 
-let img_cross = new Image(),
-    img_energy = new Image(),
+let img_energy = new Image(),
     img_life = new Image(),
     img_nuclear = new Image();
 let list_powerup = new Array();
-img_cross.src = "/static/asset/powerup/item_cross.png";
 img_energy.src = "/static/asset/powerup/item_energy.png";
 img_life.src = "/static/asset/powerup/item_life.png";
 img_nuclear.src = "/static/asset/powerup/item_nuclear.png";
@@ -122,6 +128,8 @@ function onload_setup() {
     canvas_surface.initialize_game();
     player_bucket = new bucket(bucket_width, bucket_height, bucket_x, bucket_y);
     queue_fruits();
+    queue_powerups();
+    queue_punishments();
 }
 
 function update_canvas() {
@@ -131,11 +139,7 @@ function update_canvas() {
     player_bucket.update_movement();
     player_bucket.display_health();
     player_bucket.update_speed();
-
     generate_fruits();
-    // console.log(list_fruit);
-    // console.log("num fruits spawned: " + num_fruits_spawned);
-
     for (let i = 0; i < list_fruit.length; i++) {
         list_fruit[i].update_movement();
         list_fruit[i].update_speed();
@@ -148,6 +152,32 @@ function update_canvas() {
             remove_fruit(i);
             player_score++;
             update_score();
+        }
+    }
+
+    generate_powerups();
+    for (let i = 0; i < list_powerup.length; i++) {
+        list_powerup[i].update_movement();
+        list_powerup[i].update_speed();
+        if (list_powerup[i].check_bounds()) {
+            remove_powerup(i);
+        }
+        if (list_powerup[i].check_caught()) {
+            // sound_caught.play();
+            remove_powerup(i);
+        }
+    }
+
+    generate_punishments();
+    for (let i = 0; i < list_punishment.length; i++) {
+        list_punishment[i].update_movement();
+        list_punishment[i].update_speed();
+        if (list_punishment[i].check_bounds()) {
+            remove_punishment(i);
+        }
+        if (list_punishment[i].check_caught()) {
+            // sound_caught.play();
+            remove_punishment(i);
         }
     }
 }
@@ -181,6 +211,54 @@ function queue_fruits() {
     }, 50);
 }
 
+function queue_powerups() {
+    let i = 0;
+    let timer_powerup = setInterval(function() {
+        if (i == 50) {
+            clearInterval(timer_powerup);
+        }
+        get_gen_powerups();
+        get_gen_powerups_speed();
+        get_gen_powerups_xpos();
+        setTimeout(function() {
+            queue_powerup.enqueue(new powerup(
+                FALLING_OBJ_WIDTH,
+                FALLING_OBJ_HEIGHT,
+                spawn_powerup.curr_xpos,
+                FALLING_OBJ_Y_POS,
+                spawn_powerup.curr_powerup,
+                spawn_powerup.curr_speed)
+            );
+            num_powerups_queued++;
+        }, 50);
+        i++;
+    }, 50);
+}
+
+function queue_punishments() {
+    let i = 0;
+    let timer_punishment = setInterval(function() {
+        if (i == 50) {
+            clearInterval(timer_punishment);
+        }
+        get_gen_punishments();
+        get_gen_punishments_speed();
+        get_gen_punishments_xpos();
+        setTimeout(function() {
+            queue_punishment.enqueue(new punishment(
+                FALLING_OBJ_WIDTH,
+                FALLING_OBJ_HEIGHT,
+                spawn_punishment.curr_xpos,
+                FALLING_OBJ_Y_POS,
+                spawn_punishment.curr_punishment,
+                spawn_punishment.curr_speed)
+            );
+            num_punishments_queued++;
+        }, 50);
+        i++;
+    }, 50);
+}
+
 function generate_fruits() {
     if (flag_fruit_gen && queue_fruit.len() >= 1) {
         flag_fruit_gen = false;
@@ -192,9 +270,45 @@ function generate_fruits() {
     }
 }
 
+function generate_powerups() {
+    if (flag_powerup_gen && queue_powerup.len() >= 1) {
+        flag_powerup_gen = false;
+        setTimeout(function() {
+            list_powerup.push(queue_powerup.dequeue());
+            num_powerups_spawned++;
+        }, 2000);
+        setTimeout(function() {
+            flag_powerup_gen = true;
+        }, 20000);
+    }
+}
+
+function generate_punishments() {
+    if (flag_punishment_gen && queue_punishment.len() >= 1) {
+        flag_punishment_gen = false;
+        setTimeout(function() {
+            list_punishment.push(queue_punishment.dequeue());
+            num_punishments_spawned++;
+        }, 3000);
+        setTimeout(function() {
+            flag_punishment_gen = true;
+        }, 10000);
+    }
+}
+
 function remove_fruit(i) {
     list_fruit.splice(i, 1);
     num_fruits_spawned--;
+}
+
+function remove_powerup(i) {
+    list_powerup.splice(i, 1);
+    num_powerups_spawned--;
+}
+
+function remove_punishment(i) {
+    list_punishment.splice(i, 1);
+    num_punishments_spawned--;
 }
 
 function update_score() {

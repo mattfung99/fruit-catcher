@@ -82,7 +82,7 @@ function get_gen_punishments_speed() {
         type: "POST",
         dataType: "json",
         success: function (data) {
-            spawn_fruit.curr_speed = data.speed;
+            spawn_punishment.curr_speed = data.speed;
         }
     });
 }
@@ -93,7 +93,7 @@ function get_gen_punishments_xpos() {
         type: "POST",
         dataType: "json",
         success: function (data) {
-            spawn_fruit.curr_xpos = data.xpos;
+            spawn_punishment.curr_xpos = data.xpos;
         }
     });
 }
