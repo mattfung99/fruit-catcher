@@ -7,13 +7,14 @@ function bucket(width, height, x, y) {
     this.x_pos = x;
     this.y_pos = y;
     this.hearts = 3;
-    this.allow_movement = function() {
+    this.allow_movement = function(flag_speed_up) {
+        let bucket_speed = flag_speed_up ? 20 : 10;
         this.x_speed *= this.friction;
         if (canvas_surface.keys && canvas_surface.keys[37]) {
-            this.x_speed = -10;
+            this.x_speed = -bucket_speed;
         }
         if (canvas_surface.keys && canvas_surface.keys[39]) {
-            this.x_speed = 10;
+            this.x_speed = bucket_speed;
         }
     }
     this.display_health = function() {

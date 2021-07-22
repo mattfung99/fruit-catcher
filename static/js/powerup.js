@@ -24,8 +24,7 @@ function powerup(width, height, x, y, powerup_type, speed_type) {
         }
     }
     this.update_speed = function() {
-        this.x_pos += this.x_speed;
-        this.y_pos += this.y_speed;
+        update_speed(this);
     }
     this.update_movement = function() {
         update_movement(this, this.img_type());

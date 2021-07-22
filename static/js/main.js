@@ -37,6 +37,12 @@ img_bucket.src = "/static/asset/bucket/bucket.png";
 let img_heart = new Image();
 img_heart.src = "/static/asset/hearts/heart.png";
 
+let img_explosion = new Image();
+img_explosion.src = "/static/asset/explosion/explosion.png";
+let list_explosion = new Array();
+const EXPLOSION_WIDTH = 60,
+      EXPLOSION_HEIGHT = 63;
+
 const FALLING_OBJ_WIDTH = 32,
       FALLING_OBJ_HEIGHT = 32,
       FALLING_OBJ_Y_POS = -32;
@@ -63,6 +69,8 @@ img_energy.src = "/static/asset/powerup/item_energy.png";
 img_life.src = "/static/asset/powerup/item_life.png";
 img_nuclear.src = "/static/asset/powerup/item_nuclear.png";
 
+let flag_speed_up = false;
+
 let img_bomb = new Image(),
     img_skull = new Image();
 let list_punishment = new Array();
@@ -87,7 +95,11 @@ let spawn_punishment = {
     curr_xpos: 0
 };
 
-let sound_caught = new create_sound("/static/asset/sound/beep1.wav");
+let sound_caught = new create_sound("/static/asset/sound/beep1.wav"),
+    sound_lose_life = new create_sound("/static/asset/sound/switch1.wav"),
+    sound_energy = new create_sound("/static/asset/sound/found_item.wav"),
+    sound_life = new create_sound("/static/asset/sound/curious_up.wav"),
+    sound_nuclear = new create_sound("/static/asset/sound/explosion.wav");
 
 let canvas_surface = {
     canvas: document.createElement("canvas"), initialize_game: function () {
@@ -133,52 +145,70 @@ function onload_setup() {
 }
 
 function update_canvas() {
+    let i;
     canvas_surface.reset_canvas();
     draw_background();
-    player_bucket.allow_movement();
+    player_bucket.allow_movement(flag_speed_up);
     player_bucket.update_movement();
     player_bucket.display_health();
     player_bucket.update_speed();
     generate_fruits();
-    for (let i = 0; i < list_fruit.length; i++) {
+    for (i = 0; i < list_fruit.length; i++) {
         list_fruit[i].update_movement();
         list_fruit[i].update_speed();
         if (list_fruit[i].check_bounds()) {
+            sound_lose_life.play();
             remove_fruit(i);
+            i--;
             player_bucket.hearts--;
         }
         if (list_fruit[i].check_caught()) {
             sound_caught.play();
             remove_fruit(i);
+            i--;
             player_score++;
             update_score();
         }
     }
 
     generate_powerups();
-    for (let i = 0; i < list_powerup.length; i++) {
+    for (i = 0; i < list_powerup.length; i++) {
         list_powerup[i].update_movement();
         list_powerup[i].update_speed();
         if (list_powerup[i].check_bounds()) {
             remove_powerup(i);
+            i--;
         }
         if (list_powerup[i].check_caught()) {
-            // sound_caught.play();
+            activate_powerup(i);
             remove_powerup(i);
+            i--;
         }
     }
 
     generate_punishments();
-    for (let i = 0; i < list_punishment.length; i++) {
+    for (i = 0; i < list_punishment.length; i++) {
         list_punishment[i].update_movement();
         list_punishment[i].update_speed();
         if (list_punishment[i].check_bounds()) {
             remove_punishment(i);
+            i--;
         }
         if (list_punishment[i].check_caught()) {
-            // sound_caught.play();
             remove_punishment(i);
+            i--;
         }
+    }
+
+    for (i = 0; i < list_explosion.length; i++) {
+        list_explosion[i].update_speed();
+        list_explosion[i].distance_travelled++;
+        if (list_explosion[i].check_bounds()) {
+            console.log(list_explosion[i].check_bounds());
+            list_explosion.splice(i, 1);
+            i--;
+        }
+        list_explosion[i].update_movement();
     }
 }
 
@@ -309,6 +339,49 @@ function remove_powerup(i) {
 function remove_punishment(i) {
     list_punishment.splice(i, 1);
     num_punishments_spawned--;
+}
+
+function activate_powerup(i) {
+    switch (list_powerup[i].powerup_type) {
+        case 0:
+            sound_energy.play();
+            flag_speed_up = true;
+            setTimeout(function() {
+                flag_speed_up = false;
+            }, 7000);
+            break;
+        case 1:
+            sound_life.play();
+            if (player_bucket.hearts < 3) {
+                player_bucket.hearts++;
+            }
+            break;
+        case 2:
+            let i;
+            sound_nuclear.play();
+            for (i = 0; i < list_fruit.length; i++) {
+                list_explosion.push(new explosion(
+                    EXPLOSION_WIDTH,
+                    EXPLOSION_HEIGHT,
+                    list_fruit[i].x_pos,
+                    list_fruit[i].y_pos,
+                    1
+                ));
+            }
+            for (i = 0; i < list_punishment.length; i++) {
+                list_explosion.push(new explosion(
+                    EXPLOSION_WIDTH,
+                    EXPLOSION_HEIGHT,
+                    list_punishment[i].x_pos,
+                    list_punishment[i].y_pos,
+                    1
+                ));
+            }
+            player_score += list_fruit.length;
+            list_fruit.length = 0;
+            list_punishment.length = 0;
+            break;
+    }
 }
 
 function update_score() {

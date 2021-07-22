@@ -18,6 +18,7 @@
         <script src="{{ url_for('static', filename='/js/fruit.js') }}" defer></script>
         <script src="{{ url_for('static', filename='/js/powerup.js') }}" defer></script>
         <script src="{{ url_for('static', filename='/js/punishment.js') }}" defer></script>
+        <script src="{{ url_for('static', filename='/js/explosion.js') }}" defer></script>
         <script src="{{ url_for('static', filename='/js/bucket.js') }}" defer></script>
         <script src="{{ url_for('static', filename='/js/main.js') }}" defer></script>
     </head>
@@ -25,12 +26,8 @@
     <body id="body" onload="onload_setup()">
         <div id="test-container">
             <div id="flex-container">
-                <div id="highscore">
-                    .
-                </div>
-                <div id="score">
-                    .
-                </div>
+                <div id="highscore"></div>
+                <div id="score"></div>
                 <div id="restart">
                     <button id="restart">Restart Game</button>
                 </div>
