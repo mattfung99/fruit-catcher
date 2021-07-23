@@ -105,28 +105,28 @@ function get_def_data() {
         dataType: "json",
         success: function (data) {
             data_handler = data;
-            console.log(data_handler);
+            console.clear();
+            console.log("highscore successfully loaded!");
             document.getElementById("highscore").innerHTML = "All-Time Highscore: " + data_handler.highscore;
         }
     });
 }
 
-// $('#make-ajax').click(function () {
-//     data_handler.highscore += 1;
-//     console.log(data_handler);
-//     console.log(JSON.stringify(data_handler));
-//     $.ajax({
-//         url: "/up_def_data",
-//         type: "POST",
-//         data: JSON.stringify(data_handler),
-//         contentType: 'application/json;charset=UTF-8',
-//         crossDomain: true,
-//         dataType: "json",
-//         success: function (data) {
-//             console.log(data.highscore);
-//         },
-//         error: function (error) {
-//             console.log(error);
-//         }
-//     });
-// });
+function update_def_data() {
+    console.log(data_handler);
+    console.log(JSON.stringify(data_handler));
+    $.ajax({
+        url: "/up_def_data",
+        type: "POST",
+        data: JSON.stringify(data_handler),
+        contentType: 'application/json;charset=UTF-8',
+        crossDomain: true,
+        dataType: "json",
+        success: function (data) {
+            console.log(data.highscore);
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+}

@@ -1,17 +1,22 @@
 #body {
-  background: url("/static/asset/background/fruit_background.jpg");
-  background-repeat: no-repeat;
-  background-size: auto;
+    background: url("/static/asset/background/fruit_background.jpg");
+    background-repeat: no-repeat;
+    background-size: auto;
 }
 
 #canvas-container {
-  text-align: center;
-  width: 100%;
+    text-align: center;
+    width: 100%;
 }
 
 #canvas-surface {
-  border: 5px solid saddlebrown;
-  margin: 1mm;
+    border: 5px solid saddlebrown;
+    margin: 1mm;
+}
+
+#div-container {
+    text-align: center;
+    width: 100%;
 }
 
 #flex-container {
@@ -32,7 +37,48 @@
     margin: 8px;
 }
 
-#test-container {
-  text-align: center;
-  width: 100%;
+#gameover {
+    padding-bottom: 20px;
+}
+
+.interact {
+    color: white;
+    font-family: "Lucida Console", "Courier New", monospace;
+    padding: 20px;
+}
+
+#matt-fung {
+    bottom: 0;
+    color: white;
+    cursor: pointer;
+    font-family: "Lucida Console", "Courier New", monospace;
+    font-size: 8px;
+    text-align: center;
+    position: fixed;
+    width: 100%;
+}
+
+pre {
+    display: none;
+    position: relative;
+    padding-right: 160px;
+}
+
+.popup {
+    background-color: rgba(0, 0, 0, 0.9);
+    height: 100%;
+    left: 0;
+    overflow: auto;
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+span:hover + pre {
+    display: block;
+    position: relative;
+}
+
+#title {
+    padding-bottom: 20px;
 }

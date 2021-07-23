@@ -15,6 +15,7 @@
         <script src="{{ url_for('static', filename='/js/ajax.js') }}" defer></script>
         <script src="{{ url_for('static', filename='/js/queue.js') }}" defer></script>
         <script src="{{ url_for('static', filename='/js/interface.js') }}" defer></script>
+        <script src="{{ url_for('static', filename='/js/sound.js') }}" defer></script>
         <script src="{{ url_for('static', filename='/js/fruit.js') }}" defer></script>
         <script src="{{ url_for('static', filename='/js/powerup.js') }}" defer></script>
         <script src="{{ url_for('static', filename='/js/punishment.js') }}" defer></script>
@@ -23,17 +24,54 @@
         <script src="{{ url_for('static', filename='/js/main.js') }}" defer></script>
     </head>
 
-    <body id="body" onload="onload_setup()">
-        <div id="test-container">
-            <div id="flex-container">
-                <div id="highscore"></div>
-                <div id="score"></div>
-                <div id="restart">
-                    <button id="restart">Restart Game</button>
+    <body id="body" onload="page_loadup()">
+        <div id="div-container">
+            <div class="popup" id="popup-loading">
+                <br>
+                <img id="loading" width="1007" height="266" src="/static/asset/loading/loading.png">
+            </div>
+            <div class="popup" id="popup-gameover" onclick="reload_setup()">
+                <br>
+                <img id="gameover" width="1007" height="266" src="/static/asset/gameover/gameover.png">
+                <div class="interact" id="final-score"></div>
+                <div class="interact">
+                    Click Anywhere to Play Again
+                </div>
+                <br>
+            </div>
+            <div class="popup" id="popup-start" onclick="onload_setup()">
+                <br>
+                <img id="title" width="1007" height="266" src="/static/asset/title/title.png">
+                <div class="interact">
+                    Click Anywhere to Begin
+                </div>
+                <br>
+                <span class="interact">
+                    Hover Here For Instructions
+                </span>
+                <pre>
+                    <img src="/static/asset/instruction/instructions.png" height="185" width="417">
+                </pre>
+                <div id="popup-developer-name">
+                    <a href="https://github.com/mattfung99" style="text-decoration: none">
+                        <p id="matt-fung">
+                            ** GITHUB || Matt Fung 2021|| Ver 1.0 **
+                        </p>
+                    </a>
                 </div>
             </div>
-            <div id="canvas-container"></div>
-            <!-- <button id="make-ajax">Make Ajax Call</button> -->
+            <div id="game-container">
+                <div id="flex-container">
+                    <div id="highscore"></div>
+                    <div id="score"></div>
+                    <div id="restart">
+                        <button id="restart" onclick="restart_game()">
+                            Restart Game
+                        </button>
+                    </div>
+                </div>
+                <div id="canvas-container"></div>
+            </div>
         </div>
     </body>
 </html>

@@ -98,12 +98,22 @@ let spawn_punishment = {
     curr_xpos: 0
 };
 
-let sound_caught = new create_sound("/static/asset/sound/beep1.wav"),
-    sound_lose_life = new create_sound("/static/asset/sound/switch1.wav"),
-    sound_energy = new create_sound("/static/asset/sound/found_item.wav"),
-    sound_life = new create_sound("/static/asset/sound/curious_up.wav"),
-    sound_nuclear = new create_sound("/static/asset/sound/explosion.wav"),
-    sound_skull = new create_sound("/static/asset/sound/lose1.wav");
+let timer_fruit,
+    timer_powerup,
+    timer_punishment;
+
+let sound_caught = new sound("/static/asset/sound/beep1.wav"),
+    sound_lose_life = new sound("/static/asset/sound/switch1.wav"),
+    sound_energy = new sound("/static/asset/sound/found_item.wav"),
+    sound_life = new sound("/static/asset/sound/curious_up.wav"),
+    sound_nuclear = new sound("/static/asset/sound/explosion.wav"),
+    sound_skull = new sound("/static/asset/sound/lose1.wav"),
+    sound_begin = new sound("/static/asset/sound/happy_chord.wav");
+
+let popup_start = document.getElementById("popup-start"),
+    popup_gameover = document.getElementById("popup-gameover"),
+    popup_loading = document.getElementById("popup-loading"),
+    game_container = document.getElementById("game-container");
 
 let canvas_surface = {
     canvas: document.createElement("canvas"), initialize_game: function () {
@@ -136,19 +146,33 @@ let canvas_surface = {
     }
 };
 
-function onload_setup() {
-    update_score();
-    get_def_data();
-    img_width = img_background.width;
-    img_height = img_background.height;
-    canvas_surface.initialize_game();
-    player_bucket = new bucket(BUCKET_WIDTH, BUCKET_HEIGHT, BUCKET_X, BUCKET_Y);
+function page_loadup() {
+    popup_loading.style.display = "none";
+    popup_gameover.style.display = "none";
+    game_container.style.display = "none";
+    popup_start.style.display = "block";
     queue_fruits();
     queue_powerups();
     queue_punishments();
 }
 
+function onload_setup() {
+    popup_start.style.display = "none";
+    game_container.style.display = "block";
+    begin_game();
+    sound_begin.play();
+}
+
+function reload_setup() {
+    player_score = 0;
+    popup_gameover.style.display = "none";
+    game_container.style.display = "block";
+    begin_game();
+    sound_begin.play();
+}
+
 function update_canvas() {
+    check_gameover();
     let i;
     canvas_surface.reset_canvas();
     draw_background();
@@ -174,7 +198,6 @@ function update_canvas() {
             update_score();
         }
     }
-
     generate_powerups();
     for (i = 0; i < list_powerup.length; i++) {
         list_powerup[i].update_movement();
@@ -189,7 +212,6 @@ function update_canvas() {
             i--;
         }
     }
-
     generate_punishments();
     for (i = 0; i < list_punishment.length; i++) {
         list_punishment[i].update_movement();
@@ -204,7 +226,6 @@ function update_canvas() {
             i--;
         }
     }
-
     for (i = 0; i < list_explosion.length; i++) {
         list_explosion[i].update_speed();
         list_explosion[i].distance_travelled++;
@@ -223,7 +244,7 @@ function draw_background() {
 
 function queue_fruits() {
     let i = 0;
-    let timer_fruit = setInterval(function() {
+    timer_fruit = setInterval(function() {
         if (i == 1000) {
             clearInterval(timer_fruit);
         }
@@ -247,7 +268,7 @@ function queue_fruits() {
 
 function queue_powerups() {
     let i = 0;
-    let timer_powerup = setInterval(function() {
+    timer_powerup = setInterval(function() {
         if (i == 50) {
             clearInterval(timer_powerup);
         }
@@ -271,7 +292,7 @@ function queue_powerups() {
 
 function queue_punishments() {
     let i = 0;
-    let timer_punishment = setInterval(function() {
+    timer_punishment = setInterval(function() {
         if (i == 50) {
             clearInterval(timer_punishment);
         }
@@ -382,6 +403,7 @@ function activate_powerup(i) {
                 ));
             }
             player_score += list_fruit.length;
+            update_score();
             list_fruit.length = 0;
             list_punishment.length = 0;
             break;
@@ -402,7 +424,6 @@ function activate_punishment(i) {
             player_bucket.hearts--;
             break;
         case 1:
-            sound_skull.play();
             player_bucket.hearts = 0;
             break;
     }
@@ -412,14 +433,66 @@ function update_score() {
     document.getElementById("score").innerHTML = "Player Score: " + player_score;
 }
 
-function create_sound(src) {
-    this.sound = document.createElement("audio");
-    this.sound.src = src;
-    this.sound.setAttribute("preload", "auto");
-    this.sound.setAttribute("controls", "none");
-    this.sound.style.display = "none";
-    document.body.appendChild(this.sound);
-    this.play = function() {
-        this.sound.play();
+function check_gameover() {
+    if (player_bucket.hearts == 0) {
+        end_game();
+        if (player_score > data_handler.highscore) {
+            document.getElementById("final-score").innerHTML = "You broke the highscore! Your score was: " + player_score;
+            data_handler.highscore = player_score;
+            update_def_data();
+        } else {
+            document.getElementById("final-score").innerHTML = "Your score was: " + player_score;
+        }
+        sound_skull.play();
     }
+}
+
+function begin_game() {
+    update_score();
+    get_def_data();
+    img_width = img_background.width;
+    img_height = img_background.height;
+    canvas_surface.initialize_game();
+    player_bucket = new bucket(BUCKET_WIDTH, BUCKET_HEIGHT, BUCKET_X, BUCKET_Y);
+}
+
+function end_game() {
+    reset_game();
+    game_container.style.display = "none";
+    popup_gameover.style.display = "block";
+    queue_fruits();
+    queue_powerups();
+    queue_punishments();
+}
+
+function restart_game() {
+    reset_game();
+    queue_fruits();
+    queue_powerups();
+    queue_punishments();
+    player_score = 0;
+    game_container.style.display = "none";
+    popup_loading.style.display = "block";
+    setTimeout(function() {
+        popup_loading.style.display = "none";
+        game_container.style.display = "block";
+        begin_game();
+        sound_begin.play();
+    }, 3000);
+}
+
+function reset_game() {
+    clearInterval(timer_fruit);
+    clearInterval(timer_powerup);
+    clearInterval(timer_punishment);
+    canvas_surface.stop_canvas();
+    let retrieve_element = document.getElementById("canvas-surface");
+    retrieve_element.parentNode.removeChild(retrieve_element);
+    queue_fruit.queued_items.length = 0;
+    queue_powerup.queued_items.length = 0;
+    queue_punishment.queued_items.length = 0;
+    list_fruit.length = 0;
+    list_powerup.length = 0;
+    list_punishment.length = 0;
+    list_explosion.length = 0;
 }
