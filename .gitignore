@@ -1,3 +1,4 @@
 __pycache__/
 .vscode
 tests_python/__pycache__/
+json/def_data.json
